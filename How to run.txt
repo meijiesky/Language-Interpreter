@@ -1,0 +1,5 @@
+The code is written in C++.
+
+The system will ask you for the input for multiple lines. If you want to finish input, simply enter "Enter" twice.
+
+If your input is valid, we will output the final results. Otherwise, runtime error will be thrown.
