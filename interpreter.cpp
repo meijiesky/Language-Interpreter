@@ -42,24 +42,29 @@ map<size_t, pair<string, string>> lexer(string s) {
     return matches;
 }
 
+// look at the token
 string peek(map<size_t, pair<string, string>>::iterator &it)
 {
     return it->second.first;
 }
 
+// get the current token and increment the iterator
 string get(map<size_t, pair<string, string>>::iterator &it)
 {
     return it++->second.first;
 }
 
+// expression
 int exp(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it);
 
+// number
 int number(map<size_t, pair<string, string>>::iterator &it)
 {
     int result = stoi(get(it));
     return result;
 }
 
+// factor
 int factor(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it)
 {
     if (it->second.second == "Literal")
@@ -81,9 +86,10 @@ int factor(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, 
         get(it);
         return factor(matches, it);
     }
-    return 0; // error
+    return 0;
 }
 
+// term
 int term(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it)
 {
     int result = factor(matches, it);
@@ -93,10 +99,11 @@ int term(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, st
     return result;
 }
 
+// expression
 int exp(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it)
 {
     int result = term(matches, it);
-    while (it!= matches.end() && (peek(it) == "+" || peek(it) == "-"))
+    while (it != matches.end() && (peek(it) == "+" || peek(it) == "-"))
         if (get(it) == "+")
             result += term(matches, it);
         else
