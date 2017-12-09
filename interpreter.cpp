@@ -3,7 +3,6 @@
 #include <string>
 #include <regex>
 #include <list>
-#include <algorithm>
 #include <utility>
 #include <map>
 #include<stdio.h>
