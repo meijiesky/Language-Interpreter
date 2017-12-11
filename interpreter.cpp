@@ -117,7 +117,7 @@ int main()
     string str;
     string s = " ";
 
-    // read in multiple lines and exit once there is no inout
+    // read in multiple lines and exit once there is no input
     while (s.length() != 0)
     {
         cout << "Enter text line: " << endl;
