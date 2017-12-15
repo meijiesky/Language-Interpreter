@@ -55,7 +55,7 @@ string get(map<size_t, pair<string, string>>::iterator &it)
 }
 
 // expression
-int exp(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it);
+int exp(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it, map<string, int> res);
 
 // number
 int number(map<size_t, pair<string, string>>::iterator &it)
@@ -65,49 +65,58 @@ int number(map<size_t, pair<string, string>>::iterator &it)
 }
 
 // factor
-int factor(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it)
+int factor(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it, map<string, int> res)
 {
     if (it->second.second == "Literal")
         return number(it);
+    else if (it->second.second == "Identifier")
+    {
+        map<string, int>::iterator p;
+        p = res.find(it++->second.first);
+        if (p == res.end())
+            throw  runtime_error("Error");
+        else
+            return p->second;
+    }
     else if (peek(it) == "(")
     {
         get(it); // '('
-        int result = exp(matches, it);
+        int result = exp(matches, it, res);
         get(it); // ')'
         return result;
     }
     else if (peek(it) == "-")
     {
         get(it);
-        return -factor(matches, it);
+        return -factor(matches, it, res);
     }
     else if (peek(it) == "+")
     {
         get(it);
-        return factor(matches, it);
+        return factor(matches, it, res);
     }
     return 0;
 }
 
 // term
-int term(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it)
+int term(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it, map<string, int> res)
 {
-    int result = factor(matches, it);
+    int result = factor(matches, it, res);
     while (it != matches.end() && peek(it) == "*")
         if (get(it) == "*")
-            result *= factor(matches, it);
+            result *= factor(matches, it, res);
     return result;
 }
 
 // expression
-int exp(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it)
+int exp(map<size_t, pair<string, string>> &matches, map<size_t, pair<string, string>>::iterator &it, map<string, int> res)
 {
-    int result = term(matches, it);
+    int result = term(matches, it, res);
     while (it != matches.end() && (peek(it) == "+" || peek(it) == "-"))
         if (get(it) == "+")
-            result += term(matches, it);
+            result += term(matches, it, res);
         else
-            result -= term(matches, it);
+            result -= term(matches, it, res);
     return result;
 }
 
@@ -129,7 +138,9 @@ int main()
     map<size_t, pair<string, string>> matches = lexer(str);
 
     map<size_t, pair<string, string>>::iterator it = matches.begin();
-    int result = exp(matches, it);
+
+    // store variables and the outputs
+    map<string, int> res;
 
     string var;
 
@@ -139,7 +150,9 @@ int main()
             it++;
             if (it->second.second == "Equal") {
                 it++;
-                cout << var << " = " << exp(matches, it) << endl;
+                int temp = exp(matches, it, res);
+                cout << var << " = " << temp << endl;
+                res[var] = temp;
                 if (it->second.second == "EOS") {
                     it++;
                 }
